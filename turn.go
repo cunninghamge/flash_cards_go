@@ -6,9 +6,13 @@ type Turn struct {
 }
 
 func (t Turn) Correct() bool {
-	return false
+	return t.Guess == t.Card.Answer
 }
 
 func (t Turn) Feedback() string {
-	return ""
+	if t.Correct() {
+		return "Correct!"
+	}
+
+	return "Incorrect."
 }
