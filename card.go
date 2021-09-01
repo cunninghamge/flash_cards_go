@@ -3,7 +3,5 @@ package main
 type Card struct {
 	Question string
 	Answer   string
-	Category Category
+	Category string
 }
-
-type Category string
