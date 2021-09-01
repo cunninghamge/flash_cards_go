@@ -20,7 +20,11 @@ func TestTakeTurn(t *testing.T) {
 	round := Round{Deck: deck}
 
 	turn := round.TakeTurn("Juneau")
-	if !turn.Correct() {
+	if !reflect.DeepEqual(turn.Card, card1) {
+		t.Errorf("got %v, want %v for turn's card", turn.Card, card1)
+	}
+
+	if !turn.Correct() && turn.Feedback() != "Correct!" {
 		t.Errorf("%v was incorrect but should have been correct", turn)
 	}
 
@@ -96,7 +100,7 @@ func TestPercentCorrectByCategory(t *testing.T) {
 	round.TakeTurn("Venus")            //incorrect
 	round.TakeTurn("North north west") //correct
 
-	testCases := map[string]float32{
+	testCases := map[string]float64{
 		"Geography":   100.0,
 		"STEM":        50.0,
 		"Pop Culture": 0.0,
