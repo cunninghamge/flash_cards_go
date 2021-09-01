@@ -42,8 +42,9 @@ func TestCardsInCategory(t *testing.T) {
 
 	t.Run("one card in category", func(t *testing.T) {
 		got := deck.CardsInCategory("Geography")
-		if !reflect.DeepEqual(got, card1) {
-			t.Errorf("got %v want %v", got, card1)
+		want := []Card{card1}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
 		}
 	})
 
