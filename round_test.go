@@ -6,22 +6,21 @@ import (
 )
 
 func TestCurrentCard(t *testing.T) {
-	deck := Deck{[]Card{card1, card2, card3}}
-	round := Round{Deck: deck}
+	round := Round{Deck: testDeck}
 
 	got := round.CurrentCard()
-	if !reflect.DeepEqual(got, card1) {
-		t.Errorf("got %v, want %v", got, card1)
+	if !reflect.DeepEqual(got, testCards[0]) {
+		t.Errorf("got %v, want %v", got, testCards[0])
 	}
 }
 
 func TestTakeTurn(t *testing.T) {
-	deck := Deck{[]Card{card1, card2, card3}}
+	deck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}
 	round := Round{Deck: deck}
 
 	turn := round.TakeTurn("Juneau")
-	if !reflect.DeepEqual(turn.Card, card1) {
-		t.Errorf("got %v, want %v for turn's card", turn.Card, card1)
+	if !reflect.DeepEqual(turn.Card, testCards[0]) {
+		t.Errorf("got %v, want %v for turn's card", turn.Card, testCards[0])
 	}
 
 	if !turn.Correct() && turn.Feedback() != "Correct!" {
@@ -32,13 +31,13 @@ func TestTakeTurn(t *testing.T) {
 		t.Errorf("got %v want %v for turns taken", round.Turns, []Turn{turn})
 	}
 
-	if !reflect.DeepEqual(round.CurrentCard(), card2) {
-		t.Errorf("got %v want %v for next card", round.CurrentCard(), card2)
+	if !reflect.DeepEqual(round.CurrentCard(), testCards[1]) {
+		t.Errorf("got %v want %v for next card", round.CurrentCard(), testCards[1])
 	}
 }
 
 func TestNumberCorrect(t *testing.T) {
-	deck := Deck{[]Card{card1, card2, card3}}
+	deck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}
 	round := Round{Deck: deck}
 
 	round.TakeTurn("Juneau") //correct
@@ -55,7 +54,7 @@ func TestNumberCorrect(t *testing.T) {
 }
 
 func TestNumberCorrectByCategory(t *testing.T) {
-	deck := Deck{[]Card{card1, card2, card3}}
+	deck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}
 	round := Round{Deck: deck}
 
 	round.TakeTurn("Juneau") //correct
@@ -73,7 +72,7 @@ func TestNumberCorrectByCategory(t *testing.T) {
 }
 
 func TestPercentCorrect(t *testing.T) {
-	deck := Deck{[]Card{card1, card2, card3}}
+	deck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}
 	round := Round{Deck: deck}
 
 	round.TakeTurn("Juneau") //correct
@@ -93,7 +92,7 @@ func TestPercentCorrect(t *testing.T) {
 }
 
 func TestPercentCorrectByCategory(t *testing.T) {
-	deck := Deck{[]Card{card1, card2, card3}}
+	deck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}
 	round := Round{Deck: deck}
 
 	round.TakeTurn("Juneau")           //correct
@@ -115,7 +114,7 @@ func TestPercentCorrectByCategory(t *testing.T) {
 }
 
 func TestListCategories(t *testing.T) {
-	deck := Deck{[]Card{card1, card2, card3}}
+	deck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}
 	round := Round{Deck: deck}
 	for i := 0; i < 3; i++ {
 		round.TakeTurn("doesn't matter")

@@ -4,7 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"strings"
+
+	"flash_cards/reader"
 )
 
 var (
@@ -12,8 +15,8 @@ var (
 	gameOver  = strings.Repeat("*", 10) + " Game Over! " + strings.Repeat("*", 10)
 )
 
-func playRound(reader io.Reader, writer io.Writer) {
-	round := newRound()
+func playRound(osArgs []string, reader io.Reader, writer io.Writer) {
+	round := newRound(osArgs, writer)
 	roundLength := round.Deck.Count()
 
 	displayWelcome(writer, roundLength)
@@ -26,8 +29,21 @@ func playRound(reader io.Reader, writer io.Writer) {
 	displaySummary(writer, &round)
 }
 
-func newRound() Round {
-	return Round{Deck: defaultDeck}
+func newRound(osArgs []string, writer io.Writer) Round {
+	var source = "./fixtures/default_cards.csv"
+	if len(osArgs) > 0 {
+		source = osArgs[0]
+	}
+
+	records, err := reader.ReadFile(source)
+	if err != nil {
+		exitWithError(err)
+	}
+	cards, err := createCards(records)
+	if err != nil {
+		exitWithError(err)
+	}
+	return Round{Deck: Deck{cards}}
 }
 
 func displayWelcome(w io.Writer, count int) {
@@ -53,4 +69,9 @@ func displaySummary(w io.Writer, round *Round) {
 	for _, category := range categories {
 		fmt.Fprintf(w, "%s - %.1f%% correct\n", category, round.PercentCorrectByCategory(category))
 	}
+}
+
+func exitWithError(err error) {
+	fmt.Printf("ERROR: %v\n", err)
+	os.Exit(1)
 }
