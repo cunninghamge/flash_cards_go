@@ -22,7 +22,7 @@ func TestPlayRound(t *testing.T) {
 		answers = append(answers, card.Answer)
 	}
 	reader.Write([]byte(strings.Join(answers, "\n")))
-	playRound("./fixtures/test_cards.csv", reader, writer)
+	playRound([]string{"./fixtures/test_cards.csv"}, reader, writer)
 
 	gameLog := writer.String()
 	prefix := "Welcome! You're playing with 3 cards.\n" + lineBreak + "\n"
@@ -50,7 +50,7 @@ func TestPlayRound(t *testing.T) {
 
 func TestNewRound(t *testing.T) {
 	t.Run("default deck", func(t *testing.T) {
-		got := newRound("", &bytes.Buffer{})
+		got := newRound([]string{}, &bytes.Buffer{})
 		defaultRecords, _ := reader.ReadFile("./fixtures/default_cards.csv")
 		defaultCards, _ := createCards(defaultRecords)
 		want := Round{Deck: Deck{defaultCards}}
@@ -60,7 +60,7 @@ func TestNewRound(t *testing.T) {
 	})
 
 	t.Run("with file source", func(t *testing.T) {
-		round := newRound("fixtures/test_cards.csv", &bytes.Buffer{})
+		round := newRound([]string{"fixtures/test_cards.csv"}, &bytes.Buffer{})
 		got := round.Deck.Cards[0].Question
 		want := "What is the capital of Alaska?"
 		if got != want {
@@ -81,7 +81,7 @@ func TestNewRoundExit(t *testing.T) {
 	for name, file := range testCases {
 		t.Run(name, func(t *testing.T) {
 			if os.Getenv("OS_EXIT_CALLED") == "1" {
-				newRound(file, &bytes.Buffer{})
+				newRound([]string{file}, &bytes.Buffer{})
 				return
 			}
 			subTest := exec.Command(os.Args[0], "-test.run=TestNewRoundExit")

@@ -15,8 +15,8 @@ var (
 	gameOver  = strings.Repeat("*", 10) + " Game Over! " + strings.Repeat("*", 10)
 )
 
-func playRound(cardSource string, reader io.Reader, writer io.Writer) {
-	round := newRound(cardSource, writer)
+func playRound(osArgs []string, reader io.Reader, writer io.Writer) {
+	round := newRound(osArgs, writer)
 	roundLength := round.Deck.Count()
 
 	displayWelcome(writer, roundLength)
@@ -29,10 +29,12 @@ func playRound(cardSource string, reader io.Reader, writer io.Writer) {
 	displaySummary(writer, &round)
 }
 
-func newRound(source string, writer io.Writer) Round {
-	if len(source) < 1 {
-		source = "./fixtures/default_cards.csv"
+func newRound(osArgs []string, writer io.Writer) Round {
+	var source = "./fixtures/default_cards.csv"
+	if len(osArgs) > 0 {
+		source = osArgs[0]
 	}
+
 	records, err := reader.ReadFile(source)
 	if err != nil {
 		exitWithError(err)
