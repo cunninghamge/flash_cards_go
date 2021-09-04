@@ -45,3 +45,15 @@ func TestCardsInCategory(t *testing.T) {
 		}
 	})
 }
+
+func TestShuffle(t *testing.T) {
+	deck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}
+	for i := 0; i < 30; i++ {
+		shuffledDeck := Deck{[]Card{testCards[0], testCards[1], testCards[2]}}.Shuffle()
+		if !reflect.DeepEqual(deck, shuffledDeck) {
+			return
+		}
+	}
+
+	t.Error("failed to randomize card order")
+}

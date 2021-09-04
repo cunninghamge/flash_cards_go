@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -21,7 +22,7 @@ func TestPlayRound(t *testing.T) {
 	for _, card := range testDeck.Cards {
 		answers = append(answers, card.Answer)
 	}
-	reader.Write([]byte(strings.Join(answers, "\n")))
+
 	playRound([]string{"./fixtures/test_cards.csv"}, reader, writer)
 
 	gameLog := writer.String()
@@ -31,41 +32,57 @@ func TestPlayRound(t *testing.T) {
 	}
 
 	for i, card := range testDeck.Cards {
-		want := fmt.Sprintf("This is card number %d out of 3.", i+1) + "\n" +
-			"Question: " + card.Question + "\n" +
-			"Correct!" + "\n\n"
+		want := fmt.Sprintf("This is card number %d out of 3.", i+1) + "\n"
+		if !strings.Contains(gameLog, want) {
+			t.Errorf("Game Log %s missing substring %s", gameLog, want)
+		}
+		want = "Question: " + card.Question + "\n"
 		if !strings.Contains(gameLog, want) {
 			t.Errorf("Game Log %s missing substring %s", gameLog, want)
 		}
 	}
 
-	suffix := gameOver + "\n" +
-		"You had 3 correct guesses out of 3 for a total score of 100.0%.\n" +
-		"Geography - 100.0% correct\n" +
-		"STEM - 100.0% correct\n"
-	if !strings.HasSuffix(gameLog, suffix) {
-		t.Errorf("incorrect summary: got %s want %s", gameLog, suffix)
+	substrings := []string{
+		gameOver + "\n",
+		"You had 0 correct guesses out of 3 for a total score of 0.0%.\n",
+		"Geography - 0.0% correct\n",
+		"STEM - 0.0% correct\n",
+	}
+	for _, substring := range substrings {
+		if !strings.Contains(gameLog, substring) {
+			t.Errorf("Summary %s missing substring %s", gameLog, substring)
+		}
 	}
 }
 
 func TestNewRound(t *testing.T) {
 	t.Run("default deck", func(t *testing.T) {
-		got := newRound([]string{}, &bytes.Buffer{})
 		defaultRecords, _ := reader.ReadFile("./fixtures/default_cards.csv")
 		defaultCards, _ := createCards(defaultRecords)
-		want := Round{Deck: Deck{defaultCards}}
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("got %v want %v", got, want)
+		sort.Slice(defaultCards, func(i, j int) bool {
+			return defaultCards[i].Answer < defaultCards[j].Answer
+		})
+
+		round := newRound([]string{}, &bytes.Buffer{})
+		sort.Slice(round.Deck.Cards, func(i, j int) bool {
+			return round.Deck.Cards[i].Answer < round.Deck.Cards[j].Answer
+		})
+		got := round.Deck.Cards
+		if !reflect.DeepEqual(got, defaultCards) {
+			t.Errorf("got %v defaultCards %v", got, defaultCards)
 		}
 	})
 
 	t.Run("with file source", func(t *testing.T) {
+		question := "What is the capital of Alaska?"
 		round := newRound([]string{"fixtures/test_cards.csv"}, &bytes.Buffer{})
-		got := round.Deck.Cards[0].Question
-		want := "What is the capital of Alaska?"
-		if got != want {
-			t.Errorf("got %s want %s", got, want)
+		for _, card := range round.Deck.Cards {
+			if card.Question == question {
+				return
+			}
 		}
+
+		t.Errorf("round does not contain expected card with question %s:\n%v", question, round.Deck)
 	})
 }
 

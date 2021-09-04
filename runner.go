@@ -43,7 +43,8 @@ func newRound(osArgs []string, writer io.Writer) Round {
 	if err != nil {
 		exitWithError(err)
 	}
-	return Round{Deck: Deck{cards}}
+
+	return Round{Deck: Deck{cards}.Shuffle()}
 }
 
 func displayWelcome(w io.Writer, count int) {
