@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"flash_cards/reader"
 )
 
 var (
@@ -31,7 +33,7 @@ func newRound(source string, writer io.Writer) Round {
 	if len(source) < 1 {
 		source = "./fixtures/default_cards.csv"
 	}
-	records, err := readFile(source)
+	records, err := reader.ReadFile(source)
 	if err != nil {
 		exitWithError(err)
 	}

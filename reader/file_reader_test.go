@@ -1,4 +1,4 @@
-package main
+package reader
 
 import (
 	"errors"
@@ -16,7 +16,7 @@ func TestReadFile(t *testing.T) {
 		expError   error
 	}{
 		"success": {
-			filepath:   "fixtures/cards.csv",
+			filepath:   "../fixtures/cards.csv",
 			expRecords: true,
 		},
 		"error opening file": {
@@ -31,7 +31,7 @@ func TestReadFile(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			records, err := readFile(tc.filepath)
+			records, err := ReadFile(tc.filepath)
 			if (tc.expRecords && len(records) == 0) || (!tc.expRecords && len(records) > 0) {
 				t.Errorf("got unexpected result for records: %v", records)
 			}

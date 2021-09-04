@@ -1,4 +1,4 @@
-package main
+package reader
 
 import (
 	"encoding/csv"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func readFile(filepath string) ([][]string, error) {
+func ReadFile(filepath string) ([][]string, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
