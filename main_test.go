@@ -13,7 +13,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	file, _ := os.Open("./fixtures/default_cards.csv")
+	file, _ := os.Open("./fixtures/test_cards.csv")
 	defer file.Close()
 
 	reader := csv.NewReader(file)

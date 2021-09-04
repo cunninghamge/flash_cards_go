@@ -32,7 +32,7 @@ func TestCardsInCategory(t *testing.T) {
 
 	t.Run("multiple cards in category", func(t *testing.T) {
 		got := testDeck.CardsInCategory("STEM")
-		want := []Card{testCards[1], testCards[2], testCards[5], testCards[6]}
+		want := []Card{testCards[1], testCards[2]}
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v want %v", got, want)
 		}

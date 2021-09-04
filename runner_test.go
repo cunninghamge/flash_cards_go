@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"flash_cards/reader"
 	"fmt"
 	"os"
 	"os/exec"
@@ -21,16 +22,16 @@ func TestPlayRound(t *testing.T) {
 		answers = append(answers, card.Answer)
 	}
 	reader.Write([]byte(strings.Join(answers, "\n")))
-	playRound("", reader, writer)
+	playRound("./fixtures/test_cards.csv", reader, writer)
 
 	gameLog := writer.String()
-	prefix := "Welcome! You're playing with 9 cards.\n" + lineBreak + "\n"
+	prefix := "Welcome! You're playing with 3 cards.\n" + lineBreak + "\n"
 	if !strings.HasPrefix(gameLog, prefix) {
 		t.Errorf("incorrect welcome: got %s want %s", gameLog, prefix)
 	}
 
 	for i, card := range testDeck.Cards {
-		want := fmt.Sprintf("This is card number %d out of 9.", i+1) + "\n" +
+		want := fmt.Sprintf("This is card number %d out of 3.", i+1) + "\n" +
 			"Question: " + card.Question + "\n" +
 			"Correct!" + "\n\n"
 		if !strings.Contains(gameLog, want) {
@@ -39,11 +40,9 @@ func TestPlayRound(t *testing.T) {
 	}
 
 	suffix := gameOver + "\n" +
-		"You had 9 correct guesses out of 9 for a total score of 100.0%.\n" +
+		"You had 3 correct guesses out of 3 for a total score of 100.0%.\n" +
 		"Geography - 100.0% correct\n" +
-		"STEM - 100.0% correct\n" +
-		"Sports - 100.0% correct\n" +
-		"History - 100.0% correct\n"
+		"STEM - 100.0% correct\n"
 	if !strings.HasSuffix(gameLog, suffix) {
 		t.Errorf("incorrect summary: got %s want %s", gameLog, suffix)
 	}
@@ -52,17 +51,18 @@ func TestPlayRound(t *testing.T) {
 func TestNewRound(t *testing.T) {
 	t.Run("default deck", func(t *testing.T) {
 		got := newRound("", &bytes.Buffer{})
-		want := Round{Deck: testDeck}
+		defaultRecords, _ := reader.ReadFile("./fixtures/default_cards.csv")
+		defaultCards, _ := createCards(defaultRecords)
+		want := Round{Deck: Deck{defaultCards}}
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v want %v", got, want)
 		}
 	})
 
 	t.Run("with file source", func(t *testing.T) {
-		t.Skip()
-		round := newRound("fixtures/cards.csv", &bytes.Buffer{})
+		round := newRound("fixtures/test_cards.csv", &bytes.Buffer{})
 		got := round.Deck.Cards[0].Question
-		want := "What is the official state sport of Alaska?"
+		want := "What is the capital of Alaska?"
 		if got != want {
 			t.Errorf("got %s want %s", got, want)
 		}
@@ -70,7 +70,6 @@ func TestNewRound(t *testing.T) {
 }
 
 func TestNewRoundExit(t *testing.T) {
-	t.Skip()
 	os.WriteFile("tmp.csv", []byte("a,b,c,d\n"), 0644)
 	defer os.Remove("tmp.csv")
 

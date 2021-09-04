@@ -16,7 +16,7 @@ func TestReadFile(t *testing.T) {
 		expError   error
 	}{
 		"success": {
-			filepath:   "../fixtures/cards.csv",
+			filepath:   "../fixtures/test_cards.csv",
 			expRecords: true,
 		},
 		"error opening file": {
