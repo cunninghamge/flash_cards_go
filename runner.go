@@ -59,7 +59,11 @@ func playTurn(w io.Writer, s *bufio.Scanner, cardNumber, roundLength int, round 
 	answer := s.Text()
 
 	turn := round.TakeTurn(answer)
-	fmt.Fprintln(w, turn.Feedback()+"\n")
+	fmt.Fprintln(w, turn.Feedback())
+	if !turn.Correct() {
+		fmt.Fprintf(w, fmt.Sprintf("Answer: %s\n", turn.Card.Answer))
+	}
+	fmt.Fprint(w, "\n")
 }
 
 func displaySummary(w io.Writer, round *Round) {

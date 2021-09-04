@@ -121,7 +121,7 @@ func TestPlayTurn(t *testing.T) {
 	got := writer.String()
 	want := "This is card number 1 out of 3.\n" +
 		"Question: " + testCards[0].Question + "\n" +
-		"Correct!" + "\n\n"
+		"Correct!\n\n"
 	if got != want {
 		t.Errorf("got %s want %s", got, want)
 	}
@@ -134,7 +134,8 @@ func TestPlayTurn(t *testing.T) {
 	got = writer.String()
 	want = "This is card number 2 out of 3.\n" +
 		"Question: " + testCards[1].Question + "\n" +
-		"Incorrect.\n\n"
+		"Incorrect.\n" +
+		"Answer: " + testCards[1].Answer + "\n\n"
 	if got != want {
 		t.Errorf("got %s want %s", got, want)
 	}
