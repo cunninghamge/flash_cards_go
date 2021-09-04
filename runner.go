@@ -29,10 +29,13 @@ func playRound(cardSource string, reader io.Reader, writer io.Writer) {
 
 func newRound(source string, writer io.Writer) Round {
 	if len(source) > 1 {
-		cards, err := createCardsFromFile(source)
+		records, err := readFile(source)
 		if err != nil {
-			fmt.Fprintf(writer, "ERROR: %v\n", err)
-			os.Exit(1)
+			exitWithError(err)
+		}
+		cards, err := createCards(records)
+		if err != nil {
+			exitWithError(err)
 		}
 		return Round{Deck: Deck{cards}}
 	}
@@ -62,4 +65,9 @@ func displaySummary(w io.Writer, round *Round) {
 	for _, category := range categories {
 		fmt.Fprintf(w, "%s - %.1f%% correct\n", category, round.PercentCorrectByCategory(category))
 	}
+}
+
+func exitWithError(err error) {
+	fmt.Printf("ERROR: %v\n", err)
+	os.Exit(1)
 }

@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func createCardsFromFile(filepath string) ([]Card, error) {
+func readFile(filepath string) ([][]string, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
@@ -15,7 +15,7 @@ func createCardsFromFile(filepath string) ([]Card, error) {
 
 	reader := csv.NewReader(file)
 
-	var cards []Card
+	var records [][]string
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {
@@ -24,8 +24,8 @@ func createCardsFromFile(filepath string) ([]Card, error) {
 		if err != nil {
 			return nil, err
 		}
-		cards = append(cards, Card{Question: record[0], Answer: record[1], Category: record[2]})
+		records = append(records, record)
 	}
 
-	return cards, nil
+	return records, nil
 }

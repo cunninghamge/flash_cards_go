@@ -68,15 +68,27 @@ func TestNewRound(t *testing.T) {
 }
 
 func TestNewRoundExit(t *testing.T) {
-	if os.Getenv("OS_EXIT_CALLED") == "1" {
-		newRound("notarealfile.txt", &bytes.Buffer{})
-		return
+	os.WriteFile("tmp.csv", []byte("a,b,c,d\n"), 0644)
+	defer os.Remove("tmp.csv")
+
+	testCases := map[string]string{
+		"file reader error":  "notarealfile.txt",
+		"card creator error": "tmp.csv",
 	}
-	subTest := exec.Command(os.Args[0], "-test.run=TestNewRoundExit")
-	subTest.Env = append(os.Environ(), "OS_EXIT_CALLED=1")
-	err := subTest.Run()
-	if exitError, ok := err.(*exec.ExitError); !ok || exitError.Success() {
-		t.Error("process exited with no error, wanted exit status 1")
+
+	for name, file := range testCases {
+		t.Run(name, func(t *testing.T) {
+			if os.Getenv("OS_EXIT_CALLED") == "1" {
+				newRound(file, &bytes.Buffer{})
+				return
+			}
+			subTest := exec.Command(os.Args[0], "-test.run=TestNewRoundExit")
+			subTest.Env = append(os.Environ(), "OS_EXIT_CALLED=1")
+			err := subTest.Run()
+			if exitError, ok := err.(*exec.ExitError); !ok || exitError.Success() {
+				t.Error("process exited with no error, wanted exit status 1")
+			}
+		})
 	}
 }
 

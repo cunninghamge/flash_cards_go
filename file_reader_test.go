@@ -11,13 +11,13 @@ func TestCreateCardsFromFile(t *testing.T) {
 	defer os.Remove("tmp.csv")
 
 	testCases := map[string]struct {
-		filepath string
-		expCards bool
-		expError error
+		filepath   string
+		expRecords bool
+		expError   error
 	}{
 		"success": {
-			filepath: "cards.csv",
-			expCards: true,
+			filepath:   "cards.csv",
+			expRecords: true,
 		},
 		"error opening file": {
 			filepath: "notarealfile",
@@ -31,9 +31,9 @@ func TestCreateCardsFromFile(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			cards, err := createCardsFromFile(tc.filepath)
-			if (tc.expCards && len(cards) == 0) || (!tc.expCards && len(cards) > 0) {
-				t.Errorf("got unexpected result for cards: %v", cards)
+			records, err := readFile(tc.filepath)
+			if (tc.expRecords && len(records) == 0) || (!tc.expRecords && len(records) > 0) {
+				t.Errorf("got unexpected result for records: %v", records)
 			}
 
 			if tc.expError == nil && err != nil {
