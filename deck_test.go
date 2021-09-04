@@ -5,22 +5,6 @@ import (
 	"testing"
 )
 
-var card1 = Card{
-	Question: "What is the capital of Alaska?",
-	Answer:   "Juneau",
-	Category: "Geography",
-}
-var card2 = Card{
-	Question: "The Viking spacecraft sent back to Earth photographs and reports about the surface of which planet?",
-	Answer:   "Mars",
-	Category: "STEM",
-}
-var card3 = Card{
-	Question: "Describe in words the exact direction that is 697.5° clockwise from due north?",
-	Answer:   "North north west",
-	Category: "STEM",
-}
-
 func TestCount(t *testing.T) {
 	deck := Deck{Cards: []Card{card1, card2}}
 
