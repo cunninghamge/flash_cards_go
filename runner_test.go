@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
@@ -18,7 +20,7 @@ func TestPlayRound(t *testing.T) {
 		answers = append(answers, card.Answer)
 	}
 	reader.Write([]byte(strings.Join(answers, "\n")))
-	playRound(reader, writer)
+	playRound("", reader, writer)
 
 	gameLog := writer.String()
 	prefix := "Welcome! You're playing with 9 cards.\n" + lineBreak + "\n"
@@ -47,10 +49,34 @@ func TestPlayRound(t *testing.T) {
 }
 
 func TestNewRound(t *testing.T) {
-	got := newRound()
-	want := Round{Deck: defaultDeck}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %v want %v", got, want)
+	t.Run("default deck", func(t *testing.T) {
+		got := newRound("", &bytes.Buffer{})
+		want := Round{Deck: defaultDeck}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
+		}
+	})
+
+	t.Run("with file source", func(t *testing.T) {
+		round := newRound("cards.csv", &bytes.Buffer{})
+		got := round.Deck.Cards[0].Question
+		want := "What is the official state sport of Alaska?"
+		if got != want {
+			t.Errorf("got %s want %s", got, want)
+		}
+	})
+}
+
+func TestNewRoundExit(t *testing.T) {
+	if os.Getenv("OS_EXIT_CALLED") == "1" {
+		newRound("notarealfile.txt", &bytes.Buffer{})
+		return
+	}
+	subTest := exec.Command(os.Args[0], "-test.run=TestNewRoundExit")
+	subTest.Env = append(os.Environ(), "OS_EXIT_CALLED=1")
+	err := subTest.Run()
+	if exitError, ok := err.(*exec.ExitError); !ok || exitError.Success() {
+		t.Error("process exited with no error, wanted exit status 1")
 	}
 }
 
