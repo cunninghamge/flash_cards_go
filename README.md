@@ -1,6 +1,6 @@
 # Flash Cards
 
-Flash Cards is a command line application I built to practice Go development and testing skills. The program simulates a set of flash cards, allowing users to view questions, make guesses, and see a final score at the end of the round via the command line.
+Flash Cards is a command line application built to practice Go development and testing skills. The program simulates a set of flash cards, allowing users to view questions, make guesses, and see a final score at the end of the round via the command line.
 <br><br>
 ![](./screenshot.png)
 
