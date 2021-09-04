@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -12,8 +13,8 @@ var (
 	gameOver  = strings.Repeat("*", 10) + " Game Over! " + strings.Repeat("*", 10)
 )
 
-func playRound(reader io.Reader, writer io.Writer) {
-	round := newRound()
+func playRound(cardSource string, reader io.Reader, writer io.Writer) {
+	round := newRound(cardSource, writer)
 	roundLength := round.Deck.Count()
 
 	displayWelcome(writer, roundLength)
@@ -26,7 +27,15 @@ func playRound(reader io.Reader, writer io.Writer) {
 	displaySummary(writer, &round)
 }
 
-func newRound() Round {
+func newRound(source string, writer io.Writer) Round {
+	if len(source) > 1 {
+		cards, err := createCardsFromFile(source)
+		if err != nil {
+			fmt.Fprintf(writer, "ERROR: %v\n", err)
+			os.Exit(1)
+		}
+		return Round{Deck: Deck{cards}}
+	}
 	return Round{Deck: defaultDeck}
 }
 
