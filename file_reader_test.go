@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestCreateCardsFromFile(t *testing.T) {
+func TestReadFile(t *testing.T) {
 	os.WriteFile("tmp.csv", []byte("a,b,c\nd,e"), 0644)
 	defer os.Remove("tmp.csv")
 
@@ -16,7 +16,7 @@ func TestCreateCardsFromFile(t *testing.T) {
 		expError   error
 	}{
 		"success": {
-			filepath:   "cards.csv",
+			filepath:   "fixtures/cards.csv",
 			expRecords: true,
 		},
 		"error opening file": {

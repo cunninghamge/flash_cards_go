@@ -1,21 +1,33 @@
 package main
 
 import (
-	"errors"
+	"encoding/csv"
+	"io"
 	"os"
-	"os/exec"
 	"testing"
 )
 
-func TestExitWithError(t *testing.T) {
-	if os.Getenv("OS_EXIT_CALLED") == "1" {
-		exitWithError(errors.New("error"))
-		return
+var (
+	testDeck  Deck
+	testCards []Card
+)
+
+func TestMain(m *testing.M) {
+	file, _ := os.Open("./fixtures/default_cards.csv")
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		testCards = append(testCards, Card{record[0], record[1], record[2]})
 	}
-	subTest := exec.Command(os.Args[0], "-test.run=TestNewRoundExit")
-	subTest.Env = append(os.Environ(), "OS_EXIT_CALLED=1")
-	err := subTest.Run()
-	if exitError, ok := err.(*exec.ExitError); !ok || exitError.Success() {
-		t.Error("process exited with no error, wanted exit status 1")
-	}
+
+	testDeck = Deck{testCards}
+
+	code := m.Run()
+	os.Exit(code)
 }
