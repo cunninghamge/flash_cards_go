@@ -113,3 +113,17 @@ func TestPercentCorrectByCategory(t *testing.T) {
 		}
 	}
 }
+
+func TestListCategories(t *testing.T) {
+	deck := Deck{[]Card{card1, card2, card3}}
+	round := Round{Deck: deck}
+	for i := 0; i < 3; i++ {
+		round.TakeTurn("doesn't matter")
+	}
+
+	got := round.ListCategories()
+	want := []string{"Geography", "STEM"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
