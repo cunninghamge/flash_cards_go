@@ -21,4 +21,4 @@ To run the project in your local environment, follow the instructions below:
 ## Game Play
 Launch the flash card runner in the command line by running  `go run flash_cards`
 
-You can run the program with your own set of flash cards using a CSV file. The file should not have headers, and each line should have three fields: a question, an answer, and a category. See `./fixtures/default_cards.csv` for an example (these are the default cards for playing the game). To play with a custom set of cards, pass the location of your CSV file as an argument when launching the game, e.g. `go run flash_cards ./fixtures/test_cards.csv`
+You can run the program with your own set of flash cards using a CSV file. The file should not have headers, and each line should have three fields: a question, an answer, and a category. See `./fixtures/default_cards.csv` for an example (these are the default cards for playing the game). To play with a custom set of cards, pass the location of your CSV file as an argument when launching the game, e.g.<br> `go run flash_cards ./fixtures/test_cards.csv`
