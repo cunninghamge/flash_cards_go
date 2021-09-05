@@ -27,6 +27,10 @@ func playRound(osArgs []string, reader io.Reader, writer io.Writer) {
 	}
 
 	displaySummary(writer, &round)
+	if round.PercentCorrect() < 100 {
+		retryMissedCards(writer, scanner, &round)
+	}
+	fmt.Fprintln(writer, "Deck Complete!")
 }
 
 func newRound(osArgs []string, writer io.Writer) Round {
@@ -43,7 +47,8 @@ func newRound(osArgs []string, writer io.Writer) Round {
 	if err != nil {
 		exitWithError(err)
 	}
-	return Round{Deck: Deck{cards}}
+
+	return Round{Deck: Deck{cards}.Shuffle()}
 }
 
 func displayWelcome(w io.Writer, count int) {
@@ -59,7 +64,11 @@ func playTurn(w io.Writer, s *bufio.Scanner, cardNumber, roundLength int, round 
 	answer := s.Text()
 
 	turn := round.TakeTurn(answer)
-	fmt.Fprintln(w, turn.Feedback()+"\n")
+	fmt.Fprintln(w, turn.Feedback())
+	if !turn.Correct() {
+		fmt.Fprintf(w, fmt.Sprintf("Answer: %s\n", turn.Card.Answer))
+	}
+	fmt.Fprint(w, "\n")
 }
 
 func displaySummary(w io.Writer, round *Round) {
@@ -68,6 +77,33 @@ func displaySummary(w io.Writer, round *Round) {
 	categories := round.ListCategories()
 	for _, category := range categories {
 		fmt.Fprintf(w, "%s - %.1f%% correct\n", category, round.PercentCorrectByCategory(category))
+	}
+}
+
+func retryPrompt(w io.Writer, s *bufio.Scanner) {
+	for {
+		fmt.Fprint(w, "Retry incorrect guesses? [y/n] ")
+		s.Scan()
+		answer := s.Text()
+		if strings.ToLower(answer) == "n" {
+			os.Exit(0)
+		}
+		if strings.ToLower(answer) == "y" {
+			return
+		}
+	}
+}
+
+func retryMissedCards(w io.Writer, s *bufio.Scanner, round *Round) {
+	retryPrompt(w, s)
+
+	subRound := round.MissedGuesses()
+	roundLength := subRound.Deck.Count()
+	for i := 0; i < roundLength; i++ {
+		playTurn(w, s, i+1, roundLength, &subRound)
+	}
+	if subRound.PercentCorrect() < 100 {
+		retryMissedCards(w, s, &subRound)
 	}
 }
 

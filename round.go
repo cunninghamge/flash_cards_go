@@ -77,3 +77,14 @@ func (r Round) ListCategories() []string {
 
 	return categories
 }
+
+func (r Round) MissedGuesses() Round {
+	var newRound = Round{}
+	for _, turn := range r.Turns {
+		if !turn.Correct() {
+			newRound.Deck.Cards = append(newRound.Deck.Cards, turn.Card)
+		}
+	}
+	newRound.Deck.Shuffle()
+	return newRound
+}

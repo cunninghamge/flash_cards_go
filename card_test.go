@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestBuildDeck(t *testing.T) {
+func TestCreateCards(t *testing.T) {
 	testCases := map[string]struct {
 		records    [][]string
 		deckLength int
