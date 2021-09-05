@@ -126,3 +126,19 @@ func TestListCategories(t *testing.T) {
 		t.Errorf("got %v want %v", got, want)
 	}
 }
+
+func TestMissedGuesses(t *testing.T) {
+	deck := Deck{testCards}
+	round := Round{Deck: deck}
+
+	round.TakeTurn("Juneau")
+	round.TakeTurn("Mars")
+	round.TakeTurn("South")
+
+	newRound := round.MissedGuesses()
+	got := newRound.Deck.Cards[0]
+	want := testCards[2]
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
